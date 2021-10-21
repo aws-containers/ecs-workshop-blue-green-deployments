@@ -1,5 +1,7 @@
 # ECS blue/ green deployment using CDK
 
+A walkthrough for this example can be found at https://ecsworkshop.com/blue_green_deployments/
+
 #### Table of Contents
 
 * [Outcome](#Outcome)
