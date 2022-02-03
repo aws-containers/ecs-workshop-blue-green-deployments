@@ -15,7 +15,12 @@ YELLOW="\033[1;33m"
 echo -e "${GREEN}Exporting the cloudformation stack outputs...."
 
 export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+export CDK_DEFAULT_ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 export AWS_DEFAULT_REGION=$(aws configure get region)
+
+export CDK_DEFAULT_REGION=$(aws configure get region)
+export AWS_REGION=$(aws configure get region)
+
 
 export CODE_REPO_NAME=$(aws cloudformation describe-stacks --stack-name BlueGreenContainerImageStack --query 'Stacks[*].Outputs[?ExportName==`repositoryName`].OutputValue' --output text)
 export CODE_REPO_URL=$(aws cloudformation describe-stacks --stack-name BlueGreenContainerImageStack --query 'Stacks[*].Outputs[?ExportName==`repositoryCloneUrlHttp`].OutputValue' --output text)
