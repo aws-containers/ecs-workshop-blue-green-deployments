@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import {Effect, ManagedPolicy, Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
-import * as cdk from 'aws-cdk-lib';
+import { Construct } from 'constructs';
 import iam = require('aws-cdk-lib/aws-iam');
 
 export class EcsBlueGreenRoles extends Construct {

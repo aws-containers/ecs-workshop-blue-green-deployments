@@ -1,7 +1,7 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import {countResources, expect as expectCDK} from 'aws-cdk-lib/assert';
+import {countResources, expect as expectCDK} from '@aws-cdk/assert';
 import {App, Stack} from 'aws-cdk-lib';
 import * as EcsBlueGreen from '../lib/index';
 

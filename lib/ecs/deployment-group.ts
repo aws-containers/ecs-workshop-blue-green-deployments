@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT-0
 
 import { Construct } from 'constructs';
-import {CustomResource} from 'aws-cdk-lib';
+import {CustomResource, Duration} from 'aws-cdk-lib';
 import {Effect, ManagedPolicy, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
 import {EcsDeploymentConfig, IEcsDeploymentGroup} from 'aws-cdk-lib/aws-codedeploy';
