@@ -4,11 +4,11 @@
 // SPDX-License-Identifier: MIT-0
 
 import 'source-map-support/register';
-import * as cdk from '@aws-cdk/core';
-import {CfnParameter, Construct, StackProps} from '@aws-cdk/core';
+import * as cdk from 'aws-cdk-lib';
+import {CfnParameter, Construct, StackProps} from 'aws-cdk-lib';
 import * as EcsBlueGreen from '../lib';
 
-export class BlueGreenPipelineStack extends cdk.Stack {
+export class BlueGreenPipelineStack extends Stack {
 
     constructor(scope: Construct, id: string, props?: StackProps) {
         super(scope, id, props);
@@ -53,7 +53,7 @@ export class BlueGreenPipelineStack extends cdk.Stack {
 }
 
 
-const app = new cdk.App();
+const app = new App();
 new BlueGreenPipelineStack(app, 'BlueGreenPipelineStack', {
     description: 'Builds the blue/green deployment pipeline stack'
 });

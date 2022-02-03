@@ -1,20 +1,20 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {CfnOutput} from '@aws-cdk/core';
-import {AnyPrincipal, Effect, ServicePrincipal} from '@aws-cdk/aws-iam';
-import {BlockPublicAccess, BucketEncryption} from '@aws-cdk/aws-s3';
+import { Construct } from 'constructs';
+import {CfnOutput} from 'aws-cdk-lib';
+import {AnyPrincipal, Effect, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
+import {BlockPublicAccess, BucketEncryption} from 'aws-cdk-lib/aws-s3';
 import {EcsBlueGreenDeploymentGroup, EcsBlueGreenService, EcsServiceAlarms} from '..';
-import {ICluster} from '@aws-cdk/aws-ecs';
-import {IVpc} from '@aws-cdk/aws-ec2';
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import ecr = require('@aws-cdk/aws-ecr');
-import codeCommit = require('@aws-cdk/aws-codecommit');
-import codeBuild = require('@aws-cdk/aws-codebuild');
-import codePipeline = require('@aws-cdk/aws-codepipeline');
-import codePipelineActions = require('@aws-cdk/aws-codepipeline-actions');
+import {ICluster} from 'aws-cdk-lib/aws-ecs';
+import {IVpc} from 'aws-cdk-lib/aws-ec2';
+import iam = require('aws-cdk-lib/aws-iam');
+import s3 = require('aws-cdk-lib/aws-s3');
+import ecr = require('aws-cdk-lib/aws-ecr');
+import codeCommit = require('aws-cdk-lib/aws-codecommit');
+import codeBuild = require('aws-cdk-lib/aws-codebuild');
+import codePipeline = require('aws-cdk-lib/aws-codepipeline');
+import codePipelineActions = require('aws-cdk-lib/aws-codepipeline-actions');
 
 
 export interface EcsBlueGreenPipelineProps {
@@ -30,9 +30,9 @@ export interface EcsBlueGreenPipelineProps {
     readonly deploymentConfigName?: string;
 }
 
-export class EcsBlueGreenPipeline extends cdk.Construct {
+export class EcsBlueGreenPipeline extends Construct {
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenPipelineProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenPipelineProps = {}) {
         super(scope, id);
 
         const codeRepo = codeCommit.Repository.fromRepositoryName(this, 'codeRepo', props.codeRepoName!);

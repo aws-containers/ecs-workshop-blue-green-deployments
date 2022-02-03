@@ -1,14 +1,14 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {CfnOutput} from '@aws-cdk/core';
-import {Repository} from '@aws-cdk/aws-ecr';
-import {Role} from '@aws-cdk/aws-iam';
-import {BuildEnvironmentVariableType, ComputeType, Project} from '@aws-cdk/aws-codebuild';
-import ecr = require('@aws-cdk/aws-ecr');
-import codeCommit = require('@aws-cdk/aws-codecommit');
-import codeBuild = require('@aws-cdk/aws-codebuild');
+import { Construct } from 'constructs';
+import {CfnOutput} from 'aws-cdk-lib';
+import {Repository} from 'aws-cdk-lib/aws-ecr';
+import {Role} from 'aws-cdk-lib/aws-iam';
+import {BuildEnvironmentVariableType, ComputeType, Project} from 'aws-cdk-lib/aws-codebuild';
+import ecr = require('aws-cdk-lib/aws-ecr');
+import codeCommit = require('aws-cdk-lib/aws-codecommit');
+import codeBuild = require('aws-cdk-lib/aws-codebuild');
 
 
 export interface EcsBlueGreenBuildImageProps {
@@ -20,12 +20,12 @@ export interface EcsBlueGreenBuildImageProps {
     readonly dockerHubPassword?: string;
 }
 
-export class EcsBlueGreenBuildImage extends cdk.Construct {
+export class EcsBlueGreenBuildImage extends Construct {
 
     public readonly ecrRepo: Repository;
     public readonly codeBuildProject: Project;
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenBuildImageProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenBuildImageProps = {}) {
         super(scope, id);
 
         // ECR repository for the docker images

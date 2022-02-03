@@ -1,11 +1,11 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {Duration} from '@aws-cdk/core';
-import {ApplicationLoadBalancer, ApplicationTargetGroup} from '@aws-cdk/aws-elasticloadbalancingv2';
-import {Alarm, Metric} from '@aws-cdk/aws-cloudwatch';
-import cloudWatch = require('@aws-cdk/aws-cloudwatch');
+import { Construct } from 'constructs';
+import {Duration} from 'aws-cdk-lib';
+import {ApplicationLoadBalancer, ApplicationTargetGroup} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import {Alarm, Metric} from 'aws-cdk-lib/aws-cloudwatch';
+import cloudWatch = require('aws-cdk-lib/aws-cloudwatch');
 
 export interface EcsServiceAlarmsProps {
     readonly blueTargetGroup?: ApplicationTargetGroup;
@@ -23,13 +23,13 @@ export class TargetGroupAlarm {
     }
 }
 
-export class EcsServiceAlarms extends cdk.Construct {
+export class EcsServiceAlarms extends Construct {
 
     public readonly targetGroupAlarms?: TargetGroupAlarm[] = [];
     private readonly alarms: Alarm[] = [];
     private readonly prefix: string;
 
-    constructor(scope: cdk.Construct, id: string, props: EcsServiceAlarmsProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsServiceAlarmsProps = {}) {
         super(scope, id);
 
         // Assigning the prefix
@@ -60,7 +60,7 @@ export class EcsServiceAlarms extends cdk.Construct {
         return new cloudWatch.Metric({
             namespace: 'AWS/ApplicationELB',
             metricName: 'UnHealthyHostCount',
-            dimensions: {
+            dimensionsMap: {
                 TargetGroup: targetGroup.targetGroupFullName,
                 LoadBalancer: alb.loadBalancerFullName
             },
@@ -73,7 +73,7 @@ export class EcsServiceAlarms extends cdk.Construct {
         return new cloudWatch.Metric({
             namespace: 'AWS/ApplicationELB',
             metricName: 'HTTPCode_Target_5XX_Count',
-            dimensions: {
+            dimensionsMap: {
                 TargetGroup: targetGroup.targetGroupFullName,
                 LoadBalancer: alb.loadBalancerFullName
             },

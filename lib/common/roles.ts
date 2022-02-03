@@ -1,16 +1,16 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import {Effect, ManagedPolicy, Role, ServicePrincipal} from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import iam = require('@aws-cdk/aws-iam');
+import {Effect, ManagedPolicy, Role, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
+import * as cdk from 'aws-cdk-lib';
+import iam = require('aws-cdk-lib/aws-iam');
 
-export class EcsBlueGreenRoles extends cdk.Construct {
+export class EcsBlueGreenRoles extends Construct {
 
     public readonly ecsTaskRole: Role;
     public readonly codeBuildRole: Role;
 
-    constructor(scope: cdk.Construct, id: string) {
+    constructor(scope: Construct, id: string) {
         super(scope, id);
 
         // ECS task execution role

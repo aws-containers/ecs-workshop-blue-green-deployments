@@ -1,13 +1,13 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import {countResources, expect as expectCDK} from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
+import {countResources, expect as expectCDK} from 'aws-cdk-lib/assert';
+import {App, Stack} from 'aws-cdk-lib';
 import * as EcsBlueGreen from '../lib/index';
 
 test('Blue/Green deployment pipeline is created', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'EcsBlueGreenStack');
+    const app = new App();
+    const stack = new Stack(app, 'EcsBlueGreenStack');
     // WHEN
     const ecsBlueGreenRoles = new EcsBlueGreen.EcsBlueGreenRoles(stack, 'EcsBlueGreenRoles');
     const ecsBlueGreenBuildImage = new EcsBlueGreen.EcsBlueGreenBuildImage(stack, 'EcsBlueGreenBuildImage', {

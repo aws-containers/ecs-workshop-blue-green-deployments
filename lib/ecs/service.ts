@@ -1,22 +1,22 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {Duration, RemovalPolicy} from '@aws-cdk/core';
-import {IRole} from '@aws-cdk/aws-iam';
-import {IVpc, Port} from '@aws-cdk/aws-ec2';
+import { Construct } from 'constructs';
+import {Duration, RemovalPolicy} from 'aws-cdk-lib';
+import {IRole} from 'aws-cdk-lib/aws-iam';
+import {IVpc, Port} from 'aws-cdk-lib/aws-ec2';
 import {
     ApplicationLoadBalancer,
     ApplicationProtocol,
     ApplicationTargetGroup,
     TargetType
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import {DeploymentControllerType, FargateService, ICluster, Protocol} from '@aws-cdk/aws-ecs';
-import {ApplicationListener} from '@aws-cdk/aws-elasticloadbalancingv2/lib/alb/application-listener';
-import {IRepository} from '@aws-cdk/aws-ecr';
-import ecs = require('@aws-cdk/aws-ecs');
-import elb = require('@aws-cdk/aws-elasticloadbalancingv2');
-import log = require('@aws-cdk/aws-logs');
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import {DeploymentControllerType, FargateService, ICluster, Protocol} from 'aws-cdk-lib/aws-ecs';
+import {ApplicationListener} from 'aws-cdk-lib/aws-elasticloadbalancingv2/lib/alb/application-listener';
+import {IRepository} from 'aws-cdk-lib/aws-ecr';
+import ecs = require('aws-cdk-lib/aws-ecs');
+import elb = require('aws-cdk-lib/aws-elasticloadbalancingv2');
+import log = require('aws-cdk-lib/aws-logs');
 
 
 export interface EcsBlueGreenServiceProps {
@@ -28,7 +28,7 @@ export interface EcsBlueGreenServiceProps {
     readonly ecsTaskRole?: IRole;
 }
 
-export class EcsBlueGreenService extends cdk.Construct {
+export class EcsBlueGreenService extends Construct {
 
     private static readonly PREFIX: string = 'app';
 
@@ -39,7 +39,7 @@ export class EcsBlueGreenService extends cdk.Construct {
     public readonly albTestListener: ApplicationListener;
     public readonly alb: ApplicationLoadBalancer
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenServiceProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenServiceProps = {}) {
         super(scope, id);
 
         // Creating the task definition

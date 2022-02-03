@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {CustomResource} from '@aws-cdk/core';
-import {Effect, ManagedPolicy, ServicePrincipal} from '@aws-cdk/aws-iam';
+import { Construct } from 'constructs';
+import {CustomResource} from 'aws-cdk-lib';
+import {Effect, ManagedPolicy, ServicePrincipal} from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
-import {EcsDeploymentConfig, IEcsDeploymentGroup} from '@aws-cdk/aws-codedeploy';
+import {EcsDeploymentConfig, IEcsDeploymentGroup} from 'aws-cdk-lib/aws-codedeploy';
 import {TargetGroupAlarm} from './alarms';
-import codeDeploy = require('@aws-cdk/aws-codedeploy');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import codeDeploy = require('aws-cdk-lib/aws-codedeploy');
+import iam = require('aws-cdk-lib/aws-iam');
+import lambda = require('aws-cdk-lib/aws-lambda');
 
 export interface EcsBlueGreenDeploymentGroupProps {
 
@@ -68,11 +68,11 @@ export interface EcsBlueGreenDeploymentGroupProps {
 
 }
 
-export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
+export class EcsBlueGreenDeploymentGroup extends Construct {
 
     public readonly ecsDeploymentGroup: IEcsDeploymentGroup;
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenDeploymentGroupProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenDeploymentGroupProps = {}) {
         super(scope, id);
 
         // Creating the ecs application
@@ -119,7 +119,7 @@ export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
             role: customLambdaServiceRole,
             description: 'Custom resource to create ECS deployment group',
             memorySize: 128,
-            timeout: cdk.Duration.seconds(60)
+            timeout: Duration.seconds(60)
         });
 
         new CustomResource(this, 'customEcsDeploymentGroup', {
