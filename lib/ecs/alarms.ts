@@ -1,16 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {Duration} from '@aws-cdk/core';
-import {ApplicationLoadBalancer, ApplicationTargetGroup} from '@aws-cdk/aws-elasticloadbalancingv2';
-import {Alarm, Metric} from '@aws-cdk/aws-cloudwatch';
-import cloudWatch = require('@aws-cdk/aws-cloudwatch');
+import { Construct } from 'constructs';
+import { Duration } from 'aws-cdk-lib';
+import * as albv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import * as cloudWatch from 'aws-cdk-lib/aws-cloudWatch';
 
 export interface EcsServiceAlarmsProps {
-    readonly blueTargetGroup?: ApplicationTargetGroup;
-    readonly greenTargetGroup?: ApplicationTargetGroup;
-    readonly alb?: ApplicationLoadBalancer;
+    readonly blueTargetGroup?: albv2.ApplicationTargetGroup;
+    readonly greenTargetGroup?: albv2.ApplicationTargetGroup;
+    readonly alb?: albv2.ApplicationLoadBalancer;
     readonly apiName?: string;
 }
 
@@ -23,13 +22,13 @@ export class TargetGroupAlarm {
     }
 }
 
-export class EcsServiceAlarms extends cdk.Construct {
+export class EcsServiceAlarms extends Construct {
 
     public readonly targetGroupAlarms?: TargetGroupAlarm[] = [];
-    private readonly alarms: Alarm[] = [];
+    private readonly alarms: cloudWatch.Alarm[] = [];
     private readonly prefix: string;
 
-    constructor(scope: cdk.Construct, id: string, props: EcsServiceAlarmsProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsServiceAlarmsProps = {}) {
         super(scope, id);
 
         // Assigning the prefix
@@ -56,11 +55,11 @@ export class EcsServiceAlarms extends cdk.Construct {
 
     }
 
-    private static createUnhealthyHostMetric(targetGroup: ApplicationTargetGroup, alb: ApplicationLoadBalancer) {
+    private static createUnhealthyHostMetric(targetGroup: albv2.ApplicationTargetGroup, alb: albv2.ApplicationLoadBalancer) {
         return new cloudWatch.Metric({
             namespace: 'AWS/ApplicationELB',
             metricName: 'UnHealthyHostCount',
-            dimensions: {
+            dimensionsMap: {
                 TargetGroup: targetGroup.targetGroupFullName,
                 LoadBalancer: alb.loadBalancerFullName
             },
@@ -69,11 +68,11 @@ export class EcsServiceAlarms extends cdk.Construct {
         });
     }
 
-    private static create5xxMetric(targetGroup: ApplicationTargetGroup, alb: ApplicationLoadBalancer) {
+    private static create5xxMetric(targetGroup: albv2.ApplicationTargetGroup, alb: albv2.ApplicationLoadBalancer) {
         return new cloudWatch.Metric({
             namespace: 'AWS/ApplicationELB',
             metricName: 'HTTPCode_Target_5XX_Count',
-            dimensions: {
+            dimensionsMap: {
                 TargetGroup: targetGroup.targetGroupFullName,
                 LoadBalancer: alb.loadBalancerFullName
             },
@@ -82,7 +81,7 @@ export class EcsServiceAlarms extends cdk.Construct {
         });
     }
 
-    private createAlarm(metric: Metric, targetGroupName: string, errorType: string, evaluationPeriods: number) {
+    private createAlarm(metric: cloudWatch.Metric, targetGroupName: string, errorType: string, evaluationPeriods: number) {
         const alarmName = this.prefix.concat(targetGroupName).concat(errorType).concat('Alarm');
         return new cloudWatch.Alarm(this, alarmName, {
             alarmName: alarmName,

@@ -1,15 +1,15 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {CustomResource} from '@aws-cdk/core';
-import {Effect, ManagedPolicy, ServicePrincipal} from '@aws-cdk/aws-iam';
+import { CustomResource, Duration } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
-import {EcsDeploymentConfig, IEcsDeploymentGroup} from '@aws-cdk/aws-codedeploy';
+import * as codeDeploy from 'aws-cdk-lib/aws-codeDeploy';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
 import {TargetGroupAlarm} from './alarms';
-import codeDeploy = require('@aws-cdk/aws-codedeploy');
-import iam = require('@aws-cdk/aws-iam');
-import lambda = require('@aws-cdk/aws-lambda');
+import { Construct } from 'constructs';
+
+
 
 export interface EcsBlueGreenDeploymentGroupProps {
 
@@ -68,11 +68,11 @@ export interface EcsBlueGreenDeploymentGroupProps {
 
 }
 
-export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
+export class EcsBlueGreenDeploymentGroup extends Construct {
 
-    public readonly ecsDeploymentGroup: IEcsDeploymentGroup;
+    public readonly ecsDeploymentGroup: codeDeploy.IEcsDeploymentGroup;
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenDeploymentGroupProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenDeploymentGroupProps = {}) {
         super(scope, id);
 
         // Creating the ecs application
@@ -80,18 +80,18 @@ export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
 
         // Creating the code deploy service role
         const codeDeployServiceRole = new iam.Role(this, 'ecsCodeDeployServiceRole', {
-            assumedBy: new ServicePrincipal('codedeploy.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('codedeploy.amazonaws.com')
         });
 
-        codeDeployServiceRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
+        codeDeployServiceRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodeDeployRoleForECS'));
 
         // IAM role for custom lambda function
         const customLambdaServiceRole = new iam.Role(this, 'codeDeployCustomLambda', {
-            assumedBy: new ServicePrincipal('lambda.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('lambda.amazonaws.com')
         });
 
         const inlinePolicyForLambda = new iam.PolicyStatement({
-            effect: Effect.ALLOW,
+            effect: iam.Effect.ALLOW,
             actions: [
                 'iam:PassRole',
                 'sts:AssumeRole',
@@ -104,7 +104,7 @@ export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
             resources: ['*']
         });
 
-        customLambdaServiceRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'))
+        customLambdaServiceRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AWSLambdaBasicExecutionRole'))
         customLambdaServiceRole.addToPolicy(inlinePolicyForLambda);
 
         // Custom resource to create the deployment group
@@ -119,7 +119,7 @@ export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
             role: customLambdaServiceRole,
             description: 'Custom resource to create ECS deployment group',
             memorySize: 128,
-            timeout: cdk.Duration.seconds(60)
+            timeout: Duration.seconds(60)
         });
 
         new CustomResource(this, 'customEcsDeploymentGroup', {
@@ -143,7 +143,7 @@ export class EcsBlueGreenDeploymentGroup extends cdk.Construct {
         this.ecsDeploymentGroup = codeDeploy.EcsDeploymentGroup.fromEcsDeploymentGroupAttributes(this, 'ecsDeploymentGroup', {
             application: ecsApplication,
             deploymentGroupName: props.deploymentGroupName!,
-            deploymentConfig: EcsDeploymentConfig.fromEcsDeploymentConfigName(this, 'ecsDeploymentConfig', props.deploymentConfigName!)
+            deploymentConfig: codeDeploy.EcsDeploymentConfig.fromEcsDeploymentConfigName(this, 'ecsDeploymentConfig', props.deploymentConfigName!)
         });
 
     }

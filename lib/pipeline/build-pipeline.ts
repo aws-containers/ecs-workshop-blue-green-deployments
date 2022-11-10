@@ -1,21 +1,18 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {CfnOutput} from '@aws-cdk/core';
-import {AnyPrincipal, Effect, ServicePrincipal} from '@aws-cdk/aws-iam';
-import {BlockPublicAccess, BucketEncryption} from '@aws-cdk/aws-s3';
 import {EcsBlueGreenDeploymentGroup, EcsBlueGreenService, EcsServiceAlarms} from '..';
-import {ICluster} from '@aws-cdk/aws-ecs';
-import {IVpc} from '@aws-cdk/aws-ec2';
-import iam = require('@aws-cdk/aws-iam');
-import s3 = require('@aws-cdk/aws-s3');
-import ecr = require('@aws-cdk/aws-ecr');
-import codeCommit = require('@aws-cdk/aws-codecommit');
-import codeBuild = require('@aws-cdk/aws-codebuild');
-import codePipeline = require('@aws-cdk/aws-codepipeline');
-import codePipelineActions = require('@aws-cdk/aws-codepipeline-actions');
-
+import { Construct } from 'constructs';
+import { CfnOutput, Duration } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as codeCommit from 'aws-cdk-lib/aws-codeCommit';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as codeBuild from 'aws-cdk-lib/aws-codeBuild';
+import * as s3 from 'aws-cdk-lib/aws-s3';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as codePipeline from 'aws-cdk-lib/aws-codePipeline';
+import * as codePipelineActions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 export interface EcsBlueGreenPipelineProps {
     readonly codeRepoName?: string;
@@ -24,15 +21,15 @@ export interface EcsBlueGreenPipelineProps {
     readonly ecsTaskRoleArn?: string;
     readonly containerPort?: number;
     readonly apiName?: string;
-    readonly vpc?: IVpc;
-    readonly cluster?: ICluster;
+    readonly vpc?: ec2.IVpc;
+    readonly cluster?: ecs.ICluster;
     readonly taskSetTerminationTimeInMinutes?: number;
     readonly deploymentConfigName?: string;
 }
 
-export class EcsBlueGreenPipeline extends cdk.Construct {
+export class EcsBlueGreenPipeline extends Construct {
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenPipelineProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenPipelineProps = {}) {
         super(scope, id);
 
         const codeRepo = codeCommit.Repository.fromRepositoryName(this, 'codeRepo', props.codeRepoName!);
@@ -41,11 +38,11 @@ export class EcsBlueGreenPipeline extends cdk.Construct {
         const ecsTaskRole = iam.Role.fromRoleArn(this, 'ecsTaskRole', props.ecsTaskRoleArn!);
 
         const codePipelineRole = new iam.Role(this, 'codePipelineRole', {
-            assumedBy: new ServicePrincipal('codepipeline.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('codepipeline.amazonaws.com')
         });
 
         const codePipelinePolicy = new iam.PolicyStatement({
-            effect: Effect.ALLOW,
+            effect: iam.Effect.ALLOW,
             actions: [
                 'iam:PassRole',
                 'sts:AssumeRole',
@@ -73,15 +70,15 @@ export class EcsBlueGreenPipeline extends cdk.Construct {
 
         // S3 bucket for storing the code pipeline artifacts
         const artifactsBucket = new s3.Bucket(this, 'artifactsBucket', {
-            encryption: BucketEncryption.S3_MANAGED,
-            blockPublicAccess: BlockPublicAccess.BLOCK_ALL
+            encryption: s3.BucketEncryption.S3_MANAGED,
+            blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL
         });
 
         // S3 bucket policy for the code pipeline artifacts
         const denyUnEncryptedObjectUploads = new iam.PolicyStatement({
-            effect: Effect.DENY,
+            effect: iam.Effect.DENY,
             actions: ['s3:PutObject'],
-            principals: [new AnyPrincipal()],
+            principals: [new iam.AnyPrincipal()],
             resources: [artifactsBucket.bucketArn.concat('/*')],
             conditions: {
                 StringNotEquals: {
@@ -91,9 +88,9 @@ export class EcsBlueGreenPipeline extends cdk.Construct {
         });
 
         const denyInsecureConnections = new iam.PolicyStatement({
-            effect: Effect.DENY,
+            effect: iam.Effect.DENY,
             actions: ['s3:*'],
-            principals: [new AnyPrincipal()],
+            principals: [new iam.AnyPrincipal()],
             resources: [artifactsBucket.bucketArn.concat('/*')],
             conditions: {
                 Bool: {
