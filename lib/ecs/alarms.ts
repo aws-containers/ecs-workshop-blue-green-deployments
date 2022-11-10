@@ -4,7 +4,7 @@
 import { Construct } from 'constructs';
 import { Duration } from 'aws-cdk-lib';
 import * as albv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import * as cloudWatch from 'aws-cdk-lib/aws-cloudWatch';
+import * as cloudWatch from 'aws-cdk-lib/aws-cloudwatch';
 
 export interface EcsServiceAlarmsProps {
     readonly blueTargetGroup?: albv2.ApplicationTargetGroup;

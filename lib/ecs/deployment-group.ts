@@ -4,7 +4,7 @@
 import { CustomResource, Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import * as path from 'path';
-import * as codeDeploy from 'aws-cdk-lib/aws-codeDeploy';
+import * as codeDeploy from 'aws-cdk-lib/aws-codedeploy';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import {TargetGroupAlarm} from './alarms';
 import { Construct } from 'constructs';

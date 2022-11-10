@@ -4,9 +4,9 @@
 import { Construct } from 'constructs';
 import { CfnOutput } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as codeCommit from 'aws-cdk-lib/aws-codeCommit';
+import * as codeCommit from 'aws-cdk-lib/aws-codecommit';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as codeBuild from 'aws-cdk-lib/aws-codeBuild';
+import * as codeBuild from 'aws-cdk-lib/aws-codebuild';
 
 export interface EcsBlueGreenBuildImageProps {
     readonly codeRepoName?: string;

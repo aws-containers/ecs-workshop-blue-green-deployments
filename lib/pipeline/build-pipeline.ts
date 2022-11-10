@@ -5,13 +5,13 @@ import {EcsBlueGreenDeploymentGroup, EcsBlueGreenService, EcsServiceAlarms} from
 import { Construct } from 'constructs';
 import { CfnOutput, Duration } from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
-import * as codeCommit from 'aws-cdk-lib/aws-codeCommit';
+import * as codeCommit from 'aws-cdk-lib/aws-codecommit';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
-import * as codeBuild from 'aws-cdk-lib/aws-codeBuild';
+import * as codeBuild from 'aws-cdk-lib/aws-codebuild';
 import * as s3 from 'aws-cdk-lib/aws-s3';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
-import * as codePipeline from 'aws-cdk-lib/aws-codePipeline';
+import * as codePipeline from 'aws-cdk-lib/aws-codepipeline';
 import * as codePipelineActions from 'aws-cdk-lib/aws-codepipeline-actions';
 
 export interface EcsBlueGreenPipelineProps {
