@@ -1,45 +1,37 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import * as cdk from '@aws-cdk/core';
-import {Duration, RemovalPolicy} from '@aws-cdk/core';
-import {IRole} from '@aws-cdk/aws-iam';
-import {IVpc, Port} from '@aws-cdk/aws-ec2';
-import {
-    ApplicationLoadBalancer,
-    ApplicationProtocol,
-    ApplicationTargetGroup,
-    TargetType
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import {DeploymentControllerType, FargateService, ICluster, Protocol} from '@aws-cdk/aws-ecs';
-import {ApplicationListener} from '@aws-cdk/aws-elasticloadbalancingv2/lib/alb/application-listener';
-import {IRepository} from '@aws-cdk/aws-ecr';
-import ecs = require('@aws-cdk/aws-ecs');
-import elb = require('@aws-cdk/aws-elasticloadbalancingv2');
-import log = require('@aws-cdk/aws-logs');
+import { Construct } from 'constructs';
+import { RemovalPolicy, Duration } from 'aws-cdk-lib';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecr from 'aws-cdk-lib/aws-ecr';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as log from 'aws-cdk-lib/aws-logs';
+import * as albv2 from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 
 export interface EcsBlueGreenServiceProps {
     readonly apiName?: string;
-    readonly vpc?: IVpc;
-    readonly cluster?: ICluster;
+    readonly vpc?: ec2.IVpc;
+    readonly cluster?: ecs.ICluster;
     readonly containerPort?: number;
-    readonly ecrRepository?: IRepository;
-    readonly ecsTaskRole?: IRole;
+    readonly ecrRepository?: ecr.IRepository;
+    readonly ecsTaskRole?: iam.IRole;
 }
 
-export class EcsBlueGreenService extends cdk.Construct {
+export class EcsBlueGreenService extends Construct {
 
     private static readonly PREFIX: string = 'app';
 
-    public readonly ecsService: FargateService;
-    public readonly blueTargetGroup: ApplicationTargetGroup;
-    public readonly greenTargetGroup: ApplicationTargetGroup;
-    public readonly albProdListener: ApplicationListener;
-    public readonly albTestListener: ApplicationListener;
-    public readonly alb: ApplicationLoadBalancer
+    public readonly ecsService: ecs.FargateService;
+    public readonly blueTargetGroup: albv2.ApplicationTargetGroup;
+    public readonly greenTargetGroup: albv2.ApplicationTargetGroup;
+    public readonly albProdListener: albv2.ApplicationListener;
+    public readonly albTestListener: albv2.ApplicationListener;
+    public readonly alb: albv2.ApplicationLoadBalancer
 
-    constructor(scope: cdk.Construct, id: string, props: EcsBlueGreenServiceProps = {}) {
+    constructor(scope: Construct, id: string, props: EcsBlueGreenServiceProps = {}) {
         super(scope, id);
 
         // Creating the task definition
@@ -61,11 +53,11 @@ export class EcsBlueGreenService extends cdk.Construct {
             }),
         }).addPortMappings({
             containerPort: props.containerPort!,
-            protocol: Protocol.TCP
+            protocol: ecs.Protocol.TCP
         })
 
         // Creating an application load balancer, listener and two target groups for Blue/Green deployment
-        this.alb = new elb.ApplicationLoadBalancer(this, 'alb', {
+        this.alb = new albv2.ApplicationLoadBalancer(this, 'alb', {
             vpc: props.vpc!,
             internetFacing: true
         });
@@ -80,11 +72,11 @@ export class EcsBlueGreenService extends cdk.Construct {
         this.albTestListener.connections.allowDefaultPortFromAnyIpv4('Allow traffic from everywhere');
 
         // Target group 1
-        this.blueTargetGroup = new elb.ApplicationTargetGroup(this, 'blueGroup', {
+        this.blueTargetGroup = new albv2.ApplicationTargetGroup(this, 'blueGroup', {
             vpc: props.vpc!,
-            protocol: ApplicationProtocol.HTTP,
+            protocol: albv2.ApplicationProtocol.HTTP,
             port: 80,
-            targetType: TargetType.IP,
+            targetType: albv2.TargetType.IP,
             healthCheck: {
                 path: '/',
                 timeout: Duration.seconds(30),
@@ -94,11 +86,11 @@ export class EcsBlueGreenService extends cdk.Construct {
         });
 
         // Target group 2
-        this.greenTargetGroup = new elb.ApplicationTargetGroup(this, 'greenGroup', {
+        this.greenTargetGroup = new albv2.ApplicationTargetGroup(this, 'greenGroup', {
             vpc: props.vpc!,
-            protocol: ApplicationProtocol.HTTP,
+            protocol: albv2.ApplicationProtocol.HTTP,
             port: 80,
-            targetType: TargetType.IP,
+            targetType: albv2.TargetType.IP,
             healthCheck: {
                 path: '/',
                 timeout: Duration.seconds(30),
@@ -123,13 +115,13 @@ export class EcsBlueGreenService extends cdk.Construct {
             healthCheckGracePeriod: Duration.seconds(60),
             desiredCount: 3,
             deploymentController: {
-                type: DeploymentControllerType.CODE_DEPLOY
+                type: ecs.DeploymentControllerType.CODE_DEPLOY
             },
             serviceName: props.apiName!
         });
 
-        this.ecsService.connections.allowFrom(this.alb, Port.tcp(80))
-        this.ecsService.connections.allowFrom(this.alb, Port.tcp(8080))
+        this.ecsService.connections.allowFrom(this.alb, ec2.Port.tcp(80))
+        this.ecsService.connections.allowFrom(this.alb, ec2.Port.tcp(8080))
         this.ecsService.attachToApplicationTargetGroup(this.blueTargetGroup);
 
     }

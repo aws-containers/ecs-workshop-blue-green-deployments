@@ -1,33 +1,32 @@
 // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import {Effect, ManagedPolicy, Role, ServicePrincipal} from '@aws-cdk/aws-iam';
-import * as cdk from '@aws-cdk/core';
-import iam = require('@aws-cdk/aws-iam');
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 
-export class EcsBlueGreenRoles extends cdk.Construct {
+export class EcsBlueGreenRoles extends Construct {
 
-    public readonly ecsTaskRole: Role;
-    public readonly codeBuildRole: Role;
+    public readonly ecsTaskRole: iam.Role;
+    public readonly codeBuildRole: iam.Role;
 
-    constructor(scope: cdk.Construct, id: string) {
+    constructor(scope: Construct, id: string) {
         super(scope, id);
 
         // ECS task execution role
         this.ecsTaskRole = new iam.Role(this, 'ecsTaskRoleForWorkshop', {
-            assumedBy: new ServicePrincipal('ecs-tasks.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('ecs-tasks.amazonaws.com')
         });
-        this.ecsTaskRole.addManagedPolicy(ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
+        this.ecsTaskRole.addManagedPolicy(iam.ManagedPolicy.fromAwsManagedPolicyName('service-role/AmazonECSTaskExecutionRolePolicy'));
 
 
         // IAM role for the Code Build project
         this.codeBuildRole = new iam.Role(this, 'codeBuildServiceRole', {
-            assumedBy: new ServicePrincipal('codebuild.amazonaws.com')
+            assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com')
         });
 
         const
             inlinePolicyForCodeBuild = new iam.PolicyStatement({
-                effect: Effect.ALLOW,
+                effect: iam.Effect.ALLOW,
                 actions: [
                     'ecr:GetAuthorizationToken',
                     'ecr:BatchCheckLayerAvailability',

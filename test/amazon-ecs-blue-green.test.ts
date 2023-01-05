@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: MIT-0
 
 import {countResources, expect as expectCDK} from '@aws-cdk/assert';
-import * as cdk from '@aws-cdk/core';
 import * as EcsBlueGreen from '../lib/index';
+import { Stack, App } from 'aws-cdk-lib';
 
 test('Blue/Green deployment pipeline is created', () => {
-    const app = new cdk.App();
-    const stack = new cdk.Stack(app, 'EcsBlueGreenStack');
+    const app = new App();
+    const stack = new Stack(app, 'EcsBlueGreenStack');
     // WHEN
     const ecsBlueGreenRoles = new EcsBlueGreen.EcsBlueGreenRoles(stack, 'EcsBlueGreenRoles');
     const ecsBlueGreenBuildImage = new EcsBlueGreen.EcsBlueGreenBuildImage(stack, 'EcsBlueGreenBuildImage', {
