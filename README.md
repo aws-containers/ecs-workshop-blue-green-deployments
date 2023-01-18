@@ -39,7 +39,7 @@ ECS blue/ green deployment CDK construct enabling teams to build and deploy pipe
 
 ```
 brew install jq
-npm install -g -f aws-cdk@1.128.0
+npm install -g -f aws-cdk@2.50.0
 cd $HOME && mkdir -p environment && cd environment
 git clone https://github.com/aws-containers/ecs-workshop-blue-green-deployments.git
 cd $HOME/environment/ecs-workshop-blue-green-deployments
