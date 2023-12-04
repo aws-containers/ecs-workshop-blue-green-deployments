@@ -59,7 +59,7 @@ export class EcsBlueGreenService extends Construct {
         // Creating an application load balancer, listener and two target groups for Blue/Green deployment
         this.alb = new albv2.ApplicationLoadBalancer(this, 'alb', {
             vpc: props.vpc!,
-            internetFacing: true
+            internetFacing: false
         });
         this.albProdListener = this.alb.addListener('albProdListener', {
             port: 80
